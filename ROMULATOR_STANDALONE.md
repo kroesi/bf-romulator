@@ -52,12 +52,8 @@ At this point, your standalone programmer is ready to go. Connect the D1 Mini to
 
 Now you can power up, and wait for the blinking LED to stop blinking and be solidly on. This indicates that the board has successfully connected to your router and is now on your wifi network.
 
-Here is one tricky part. The D1 Mini is supposed to be able to self-report a hostname, much like the raspberry pi does on your local network (raspberrypi.local). This would be convenient, since you could refer to this address rather than needing to know the local IP that your router happens to assign to the device. However, I was not able to get this to work, despite trying sample code exactly which claimed to do this. Possibly a router misconfiguration on my part. Feel free to let me know if you have any insights on this.\
-For this reason, I added a simple redirect service hosted on my site, bitfixer.com.\
-Once the D1 Mini successfully connects to your network, it makes a single request to http://bitfixer.com/rmltr/r.php. Included in this request is the local IP address the device was given by your router.\
-After your D1 Mini connects, you can then reach its web interface by going here:\
-[http://bitfixer.com/myromulator](http://bitfixer.com/myromulator)\
-This reads the IP of the incoming request, which will match the IP of the D1 Mini since they are on the same network, and will redirect you back to the D1 Mini's local IP. This allows you to reach the web interface without knowing the specific local IP.\
+Your device should be reachable now under <http://romulator.local> .
+
 You can also just check the local IP of the device on your router as well and connect directly to it, either method works.
 
 Once connected to the web interface, you can program the ROMulator with the firmware you built, which will be in bin/romulator.bin in the bf-romulator directory. Just select 'Program' on the webpage and then select this file, and wait until the upload and programming completes. That's it!
