@@ -1,6 +1,7 @@
 #include "rServer.h"
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <LittleFS.h>
@@ -354,18 +355,16 @@ void startServer()
         digitalWrite(LED_PIN, LED_ON);
         Serial.printf("connected, ip address %s\n", WiFi.localIP().toString().c_str());
 
-        // report local ip address to forwarding service
-        // this allows you to find your romulator on your local network easily
-        WiFiClient client;
-        HTTPClient http;
-        char url[256];
-        sprintf(url, "http://bitfixer.com/rmltr/r.php?ip=%s", WiFi.localIP().toString().c_str());
-
-        http.begin(client, url);
-        int httpCode = http.GET();
-        Serial.printf("recv %d\n", httpCode);
-        String payload = http.getString();
-        Serial.printf("payload: %s\n", payload.c_str());
+        // Set up mDNS responder:
+        // romulator.local
+        if (!MDNS.begin("romulator")){
+            Serial.println("Error setting up MDNS responder!");
+            while (1){
+                delay(1000);
+            }
+        }
+        
+        Serial.println("mDNS responder started");        
     }
 
     server.on("/",  handlePortal);
@@ -385,6 +384,9 @@ void startServer()
     server.begin();
     Serial.println("HTTP server started.\n");
 
+    // Add service to MDNS-SD
+    MDNS.addService("http", "tcp", 80);
+    
     _lastMillis = millis();
 }
 
@@ -408,6 +410,10 @@ void handleClient()
             _lastMillis += 500;
         }
     }
-
+    else
+    {
+        MDNS.update();
+    }
+    
     server.handleClient();
 }
